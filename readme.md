@@ -35,6 +35,9 @@ NodeJS `8` is required.
 
 ## Usages
 
+* 1 - Install dependencies : `npm install`.
+* 2 - Build : `npm run build`. 
+
 For now use the start script : `npm start`. 
 This command requires parameters (`npm start -- [--<option>]`, ex : `npm start -- --path <path_to_.ts_file>`). 
 
