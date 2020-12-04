@@ -12,6 +12,7 @@
     "gbts": "./dist/index.js"
   },
   "scripts": {
+    "install": "node install.js",
     "clean": "shx rm -rf dist/*",
     "build": "tsc",
     "watch": "tsc --watch",
@@ -28,8 +29,10 @@
     "TypeScript"
   ],
   "dependencies": {
+    "adm-zip": "^0.5.1",
     "minimist": "^1.2.5",
     "ora": "^5.1.0",
+    "request": "2.88.0",
     "ts2c": "^2.2.7",
     "yargs": "^16.1.1"
   },
