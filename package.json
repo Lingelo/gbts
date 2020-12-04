@@ -5,13 +5,18 @@
   "description": "CLI tool that allows you to write GameBoy games on TypeScript !",
   "author": "Angélo LIMA",
   "license": "ISC",
-  "main": "dist/main.js",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "./dist/src/index.d.ts",
   "bin": {
-    "gbts": "./dist/main.js"
+    "gbts": "./dist/index.js"
   },
   "scripts": {
+    "clean": "shx rm -rf dist/*",
     "build": "tsc",
-    "start:test": "tsc && node dist/main.js --path C:/repository/gb-projects/hello-world/hello.ts"
+    "watch": "tsc --watch",
+    "prepack": "npm run clean && npm run build",
+    "start": "tsc && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -29,10 +34,12 @@
     "yargs": "^16.1.1"
   },
   "devDependencies": {
+    "@types/minimist": "^1.2.1",
     "@types/node": "^14.14.10",
     "eslint": "6.8.0",
     "install": "^0.13.0",
     "npm": "^6.14.9",
+    "shx": "^0.3.3",
     "tslint": "^5.12.1",
     "typescript": "^3.3.3"
   }

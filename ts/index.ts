@@ -1,6 +1,6 @@
 import parse = require('minimist');
-import {Logger} from "./src/logger";
-import {Command} from "./src/command";
+import {Logger} from "./logger";
+import {Command} from "./command";
 
 const yargs = require('yargs')
     .usage('Gbts transpiles and produce .gb rom file for GameBoy.')
