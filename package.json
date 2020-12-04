@@ -1,0 +1,39 @@
+{
+  "private": true,
+  "name": "gbts",
+  "version": "0.0.1",
+  "description": "CLI tool that allows you to write GameBoy games on TypeScript !",
+  "author": "Angélo LIMA",
+  "license": "ISC",
+  "main": "dist/main.js",
+  "bin": {
+    "gbts": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start:test": "tsc && node dist/main.js --path C:/repository/gb-projects/hello-world/hello.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Freuhlon/gbts.js"
+  },
+  "keywords": [
+    "CLI",
+    "GameBoy",
+    "TypeScript"
+  ],
+  "dependencies": {
+    "minimist": "^1.2.5",
+    "ora": "^5.1.0",
+    "ts2c": "^2.2.7",
+    "yargs": "^16.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.10",
+    "eslint": "6.8.0",
+    "install": "^0.13.0",
+    "npm": "^6.14.9",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  }
+}
