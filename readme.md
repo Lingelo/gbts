@@ -47,6 +47,27 @@ This command requires parameters (`npm start -- [--<option>]`, ex : `npm start -
 | version   | show version number                       | `npm start -- --version`          |
 | path      | Path to .ts file to be transpiled to .c   | `npm start -- --path C:/hello.ts` |
 
+## The famous 'HelloWorld' ! 
+
+Once the prerequisites have been completed, let's write your first hello workd on GameBoy. 
+his tutorial works on windows and uses the emulator BGB. (it can be downloaded [here](https://bgb.bircd.org/))
+
+#### Step 1 
+White a `hello.ts` TypeScript file whith the following content : `console.log("Hello World!")` and nothing else ...
+ 
+#### Step 2 
+After installing the GBTS dependencies (`npm install`).
+Go to the root directory of GBTS and type the following command: `npm start -- --path <path_to_hello.ts>`.
+
+#### Step 3
+
+Once the step 2 finished, start `bgb.exe` and drag and drop the `hello.gb` one the GBG screen. 
+
+You should see the following image appear :
+ 
+![Hello world](doc/hello.png)  
+
+Congrats !   
 
 ## Next developments
 
