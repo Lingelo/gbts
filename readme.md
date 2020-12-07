@@ -71,5 +71,6 @@ Congrats !
 
 ## Next developments
 
-I am trying to deploy gbts as a node module. An error occurs on Windows when launching the gbts command once deployed.
+* I am working on the use of gbdk libraries (gb / gb.h for example). Compiling by referring to headers does not work for the moment: [See issue here](https://github.com/andrei-markeev/ts2c-target-esp-idf/issues/1)
+* I am trying to deploy gbts as a node module. An error occurs on Windows when launching the gbts command once deployed.
 See : [Stackoverflow issue](https://stackoverflow.com/questions/65136317/installing-locally-and-globally-a-npm-depency-produces-an-error-while-executing).
