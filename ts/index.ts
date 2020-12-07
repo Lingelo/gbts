@@ -6,14 +6,16 @@ import {Logger} from "./logger";
 const yargs = require('yargs')
     .scriptName("gbts")
     .usage('Usage: $0 <command> [options]')
-    .command('[command]', 'Command to run')
-    .example('$0 --path <path>', 'Transpile / Compile / Build rom')
-    .example('$0 all --path <path>', 'Transpile / Compile / Build rom')
-    .example('$0 compile --path <path>', 'Compile / Build rom')
-    .example('$0 build --path <path>', 'Build rom')
+    .command('all (or empty)', 'Run all commands : Transpile / Compile / Build rom')
+    .command('compile', 'Run commands : Compile / Build rom')
+    .command('build', 'Run command : Build rom')
+    .example('$0 --path <path>', 'Transpile / Compile / Build rom from a .ts file')
+    .example('$0 all --path <path>', 'Transpile / Compile / Build rom from a .ts file')
+    .example('$0 compile --path <path>', 'Compile / Build rom from a .ts file')
+    .example('$0 build --path <path>', 'Build rom from a .ts file')
     .option('path', {
         type: 'string',
-        description: 'Path to .ts file to be transpiled to .c' // (3)
+        description: 'Path to .ts file'
     })
     .locale('en')
     .argv;
@@ -31,9 +33,11 @@ async function main() {
         const command = args._[0].toLowerCase();
         switch (command) {
             case "compile" :
+                Logger.info("Run command compile : Compile / Build rom.")
                 await Command.COMPILE(path);
                 break;
             case "build" :
+                Logger.info("Run command compile : Build rom.")
                 await Command.BUILD(path);
                 break;
             default:
