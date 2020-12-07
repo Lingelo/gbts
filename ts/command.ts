@@ -1,28 +1,31 @@
+import child_process from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import {Logger} from "./logger";
-import child_process = require("child_process");
-import fs = require('fs');
 
 const processRoot = process.cwd();
 
 export class Command {
 
     static checkArgs(args: any): void {
-        if(!args['path']) {
+        if (!args['path']) {
             Logger.error("Path is mandatory !");
             process.exit(0);
         }
     }
 
-    static transpile(path: string): Promise<string | object> {
+    static transpile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
             Logger.startLoading('Starting transpilation');
 
-            if (!fs.existsSync(path)) {
+            filePath = this.computeAbsolutePath(filePath);
+
+            if (!fs.existsSync(filePath)) {
                 Logger.stopLoading();
-                return reject(`File ${path} does not exist.`);
+                return reject(`File ${filePath} does not exist.`);
             }
 
-            const spawn = child_process.exec(`npx ts2c ${path}`, function (error, stdout, stderr) {
+            const spawn = child_process.exec(`npx ts2c ${filePath}`, function (error, stdout, stderr) {
                 if (error) {
                     return reject(`Error while processing transpilation. Error code${error.code}. Signal received${error.signal}\nStack${error.stack}`);
                 }
@@ -30,7 +33,7 @@ export class Command {
 
             spawn.on('exit', function (code) {
                 if (code === 0) {
-                    Logger.success(`Transpilation of ${path} ended`);
+                    Logger.success(`Transpilation of ${filePath} ended`);
                 }
                 return resolve();
             });
@@ -60,18 +63,13 @@ export class Command {
 
     }
 
-    static compile(path: string): Promise<string | object> {
+    static compile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
             Logger.startLoading('Compiling');
+            filePath = this.computeAbsolutePath(filePath);
+            filePath = filePath.replace(".ts", "")
 
-            let number = path.lastIndexOf('.');
-            let fileName = path.substring(0, number);
-            let workingDirectory = fileName.substring(0, fileName.lastIndexOf('/'));
-
-
-            process.chdir(workingDirectory);
-
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${fileName}.c`, function (error, stdout, stderr) {
+            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`, function (error, stdout, stderr) {
                 if (error) {
                     return reject(`Error while compiling. Error code${error.code}. Signal received${error.signal}\nStack${error.stack}`);
                 }
@@ -87,15 +85,15 @@ export class Command {
     }
 
 
-    static link(path: string): Promise<string | object> {
+    static link(filePath: string): Promise<string | object> {
 
         return new Promise((resolve, reject) => {
             Logger.startLoading('Editing links');
 
-            let number = path.lastIndexOf('.');
-            let fileName = path.substring(0, number);
+            filePath = this.computeAbsolutePath(filePath);
+            filePath = filePath.replace(".ts", "")
 
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-link.bat ${fileName}.rel -o ${fileName}.ihx`, function (error, stdout, stderr) {
+            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-link.bat ${filePath}.rel -o ${filePath}.ihx`, function (error, stdout, stderr) {
                 if (error) {
                     return reject(`Error while editing links. Error code${error.code}. Signal received${error.signal}\nStack${error.stack}`);
                 }
@@ -110,15 +108,15 @@ export class Command {
         });
     }
 
-    static makeRom(path: string) {
+    static makeRom(filePath: string) {
 
         return new Promise((resolve, reject) => {
             Logger.startLoading('Making rom file');
 
-            let number = path.lastIndexOf('.');
-            let fileName = path.substring(0, number);
+            filePath = this.computeAbsolutePath(filePath);
+            filePath = filePath.replace(".ts", "")
 
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-make-rom.bat ${fileName}.ihx ${fileName}.gb`, function (error, stdout, stderr) {
+            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-make-rom.bat ${filePath}.ihx ${filePath}.gb`, function (error, stdout, stderr) {
                 if (error) {
                     return reject(`Error while making rom. Error code${error.code}. Signal received${error.signal}\nStack${error.stack}`);
                 }
@@ -132,5 +130,12 @@ export class Command {
             });
         });
 
+    }
+
+    private static computeAbsolutePath(filePath: string): string {
+        if(!path.isAbsolute(filePath)) {
+            path.join(__dirname, path.basename(filePath));
+        }
+        return filePath;
     }
 }
