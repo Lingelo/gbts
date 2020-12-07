@@ -69,7 +69,7 @@ You should see the following image appear :
 
 Congrats !   
 
-## Next developments
+## works in progress
 
 * I am working on the use of gbdk libraries (gb / gb.h for example). Compiling by referring to headers does not work for the moment: [See issue here](https://github.com/andrei-markeev/ts2c-target-esp-idf/issues/1)
 * I am trying to deploy gbts as a node module. An error occurs on Windows when launching the gbts command once deployed.
