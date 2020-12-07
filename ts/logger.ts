@@ -25,4 +25,8 @@ export class Logger {
     public static stopLoading() {
         this.instance.stopAndPersist();
     }
+
+    static info(text: string) {
+        this.instance.info(text);
+    }
 }

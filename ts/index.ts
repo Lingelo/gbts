@@ -25,6 +25,7 @@ async function main() {
     const path = args['path'];
 
     if (!args._.length) {
+        Logger.info("No command set, run Transpile / Compile / Build rom.")
         await Command.ALL(path)
     } else {
         const command = args._[0].toLowerCase();

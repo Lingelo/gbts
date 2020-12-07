@@ -82,6 +82,11 @@ export class Command {
         return new Promise((resolve, reject) => {
             Logger.startLoading('Preparing gbdk-n');
 
+            if (!fs.existsSync(`${processRoot}/bin/gbdk-n-master`)) {
+                Logger.stopLoading();
+                return reject(`GBDK not installed, please run "npm install" first.`);
+            }
+
             process.chdir(`${processRoot}/bin/gbdk-n-master`);
 
             const spawn = child_process.exec(`make`, function (error, stdout, stderr) {
