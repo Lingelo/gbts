@@ -21,7 +21,6 @@ async function main() {
     } catch (error) {
         logger.fail(error);
     }
-
 }
 
 

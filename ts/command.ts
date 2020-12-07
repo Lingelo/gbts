@@ -7,6 +7,43 @@ const processRoot = process.cwd();
 
 export class Command {
 
+    static ALL = (path: string) => {
+        return Command.transpile(path)
+            .then(() => Command.makeGBDKN())
+            .then(() => Command.compile(path))
+            .then(() => Command.link(path))
+            .then(() => Command.makeRom(path))
+            .then(() => {
+                Logger.success("ROM built");
+            }).catch((error) => {
+                Logger.stopLoading();
+                Logger.error(error);
+            });
+    }
+
+    static COMPILE = (path: string) => {
+        return Command.makeGBDKN()
+            .then(() => Command.compile(path))
+            .then(() => Command.link(path))
+            .then(() => Command.makeRom(path))
+            .then(() => {
+                Logger.success("ROM built");
+            }).catch((error) => {
+                Logger.stopLoading();
+                Logger.error(error);
+            });
+    }
+
+    static BUILD = (path: string) => {
+        return Command.makeRom(path)
+            .then(() => {
+                Logger.success("ROM built");
+            }).catch((error) => {
+                Logger.stopLoading();
+                Logger.error(error);
+            });
+    }
+
     static checkArgs(args: any): void {
         if (!args['path']) {
             Logger.error("Path is mandatory !");
@@ -14,7 +51,7 @@ export class Command {
         }
     }
 
-    static transpile(filePath: string): Promise<string | object> {
+    private static transpile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
             Logger.startLoading('Starting transpilation');
 
@@ -40,7 +77,7 @@ export class Command {
         })
     }
 
-    static makeGBDKN(): Promise<string | object> {
+    private static makeGBDKN(): Promise<string | object> {
 
         return new Promise((resolve, reject) => {
             Logger.startLoading('Preparing gbdk-n');
@@ -63,7 +100,7 @@ export class Command {
 
     }
 
-    static compile(filePath: string): Promise<string | object> {
+    private static compile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
             Logger.startLoading('Compiling');
             filePath = this.computeAbsolutePath(filePath);
@@ -85,7 +122,7 @@ export class Command {
     }
 
 
-    static link(filePath: string): Promise<string | object> {
+    private static link(filePath: string): Promise<string | object> {
 
         return new Promise((resolve, reject) => {
             Logger.startLoading('Editing links');
@@ -108,7 +145,7 @@ export class Command {
         });
     }
 
-    static makeRom(filePath: string) {
+    private static makeRom(filePath: string) {
 
         return new Promise((resolve, reject) => {
             Logger.startLoading('Making rom file');
@@ -133,7 +170,7 @@ export class Command {
     }
 
     private static computeAbsolutePath(filePath: string): string {
-        if(!path.isAbsolute(filePath)) {
+        if (!path.isAbsolute(filePath)) {
             path.join(__dirname, path.basename(filePath));
         }
         return filePath;

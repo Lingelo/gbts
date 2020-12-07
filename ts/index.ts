@@ -1,10 +1,16 @@
-import parse = require('minimist');
-import {Logger} from "./logger";
+#!/usr/bin/env node
+import parse from 'minimist';
 import {Command} from "./command";
+import {Logger} from "./logger";
 
 const yargs = require('yargs')
-    .usage('Gbts transpiles and produce .gb rom file for GameBoy.')
-    .example('$0 --path', 'Path to .ts file.')
+    .scriptName("gbts")
+    .usage('Usage: $0 <command> [options]')
+    .command('[command]', 'Command to run')
+    .example('$0 --path <path>', 'Transpile / Compile / Build rom')
+    .example('$0 all --path <path>', 'Transpile / Compile / Build rom')
+    .example('$0 compile --path <path>', 'Compile / Build rom')
+    .example('$0 build --path <path>', 'Build rom')
     .option('path', {
         type: 'string',
         description: 'Path to .ts file to be transpiled to .c' // (3)
@@ -12,24 +18,29 @@ const yargs = require('yargs')
     .locale('en')
     .argv;
 
-function main() {
+async function main() {
     const args = parse(process.argv.slice(2));
 
     Command.checkArgs(args);
     const path = args['path'];
 
-    Command.transpile(path)
-        .then(() => Command.makeGBDKN())
-        .then(() => Command.compile(path))
-        .then(() => Command.link(path))
-        .then(() => Command.makeRom(path))
-        .then(() => {
-            Logger.success("ROM built");
-        })
-        .catch((error) => {
-            Logger.stopLoading();
-            Logger.error(error);
-        });
+    if (!args._.length) {
+        await Command.ALL(path)
+    } else {
+        const command = args._[0].toLowerCase();
+        switch (command) {
+            case "compile" :
+                await Command.COMPILE(path);
+                break;
+            case "build" :
+                await Command.BUILD(path);
+                break;
+            default:
+                Logger.error("Command " + command + " unknown.");
+
+        }
+    }
+
 }
 
-main();
+main().then();

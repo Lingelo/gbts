@@ -1,4 +1,4 @@
-import ora = require('ora');
+import ora from 'ora';
 
 export class Logger {
 
