@@ -73,7 +73,7 @@ Congrats !
 
 * The use of the gbdk libraries (gb / gb.h for example) is approximate...
 Compiling by referring to headers does not work for the moment: [See issue here](https://github.com/andrei-markeev/ts2c-target-esp-idf/issues/1)
-Current workaround: Added headers after transpilation process.  
+Current workaround: Add headers after transpilation process.  
 
 * Deploy GBTS as a node module is KO. An error occurs on Windows when launching the gbts command once deployed.
 See : [Stackoverflow issue](https://stackoverflow.com/questions/65136317/installing-locally-and-globally-a-npm-depency-produces-an-error-while-executing).
