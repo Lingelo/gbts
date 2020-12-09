@@ -19,6 +19,13 @@ export class Command {
             });
     }
 
+    static TRANSPILE = (path: string) =>
+        Command.transpile(path)
+            .catch((error) => {
+                Logger.stopLoading();
+                Logger.error(error);
+            })
+
     static COMPILE = (path: string) => {
         return Command.makeGBDKN()
             .then(() => Command.compile(path))
@@ -56,18 +63,20 @@ export class Command {
                 return reject(`File ${filePath} does not exist`);
             }
 
-            const spawn = child_process.exec(`npx ts2c ${filePath}`, function (error, stdout, stderr) {
-                if (error) {
-                    return reject(`Error while processing transpilation\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
-                }
-            });
+            const directory = path.dirname(filePath);
 
-            spawn.on('exit', function (code) {
-                if (code === 0) {
-                    Logger.success(`Transpilation of ${filePath} done`);
-                }
+            //TODO ts2c dont work with absolute paths ... produce max stack size exceeded
+            process.chdir(directory);
+
+            try {
+                child_process.execSync(`npx ts2c ${path.basename(filePath)}`, {stdio: 'inherit'});
+                Logger.success(`Transpilation of ${path.basename(filePath)} done`);
+                process.chdir(processRoot);
                 return resolve();
-            });
+            } catch (error) {
+                return reject(`Error while processing transpilation\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
+            }
+
         })
     }
 
@@ -83,18 +92,14 @@ export class Command {
 
             process.chdir(`${processRoot}/bin/gbdk-n-master`);
 
-            const spawn = child_process.exec(`make`, function (error, stdout, stderr) {
-                if (error) {
-                    return reject(`Error while compiling GBDK (GameBoy SDK)\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
-                }
-            });
+            try {
+                child_process.execSync(`make`, {stdio: 'ignore'});
+                Logger.success(`GBDK (GameBoy SDK) compilation done`);
+                return resolve()
+            } catch(error) {
+                return reject(`Error while compiling GBDK (GameBoy SDK)\n${error}`);
+            }
 
-            spawn.on('exit', function (code) {
-                if (code === 0) {
-                    Logger.success(`GBDK (GameBoy SDK) compilation done`);
-                }
-                return resolve();
-            });
         });
 
     }
@@ -105,18 +110,18 @@ export class Command {
             filePath = this.computeAbsolutePath(filePath);
             filePath = filePath.replace(".ts", "")
 
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`, function (error, stdout, stderr) {
-                if (error) {
-                    return reject(`Error while compiling\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
-                }
-            });
+            const directory = path.dirname(filePath);
+            process.chdir(directory);
 
-            spawn.on('exit', function (code) {
-                if (code === 0) {
-                    Logger.success(`Compiling source done`);
-                }
+            try {
+                let command = `${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`;
+                child_process.execSync(command);
+                Logger.success(`Compiling source done`);
+                process.chdir(processRoot);
                 return resolve();
-            });
+            } catch (error) {
+                return reject(`Error while compiling\nError ${error}`);
+            }
         });
     }
 
@@ -129,18 +134,18 @@ export class Command {
             filePath = this.computeAbsolutePath(filePath);
             filePath = filePath.replace(".ts", "")
 
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-link.bat ${filePath}.rel -o ${filePath}.ihx`, function (error, stdout, stderr) {
-                if (error) {
-                    return reject(`Error while editing links\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
-                }
-            });
+            const directory = path.dirname(filePath);
+            process.chdir(directory);
 
-            spawn.on('exit', function (code) {
-                if (code === 0) {
-                    Logger.success(`Editing links done`);
-                }
+            try {
+                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-link.bat ${filePath}.rel -o ${filePath}.ihx`);
+                Logger.success(`Editing links done`);
+                process.chdir(processRoot);
                 return resolve();
-            });
+            } catch (error) {
+                return reject(`Error while editing links\nError ${error.code}`);
+            }
+
         });
     }
 
@@ -152,18 +157,17 @@ export class Command {
             filePath = this.computeAbsolutePath(filePath);
             filePath = filePath.replace(".ts", "")
 
-            const spawn = child_process.exec(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-make-rom.bat ${filePath}.ihx ${filePath}.gb`, function (error, stdout, stderr) {
-                if (error) {
-                    return reject(`Error while making rom\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
-                }
-            });
+            const directory = path.dirname(filePath);
+            process.chdir(directory);
 
-            spawn.on('exit', function (code) {
-                if (code === 0) {
-                    Logger.success(`Building rom done`);
-                }
+            try {
+                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-make-rom.bat ${filePath}.ihx ${filePath}.gb`);
+                Logger.success(`Building rom done`);
+                process.chdir(processRoot);
                 return resolve();
-            });
+            } catch (error) {
+                return reject(`Error while making rom\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
+            }
         });
 
     }

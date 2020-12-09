@@ -20,7 +20,7 @@ const yargs = require('yargs')
     .locale('en')
     .argv;
 
-async function main() {
+function main() {
     const args = parse(process.argv.slice(2));
 
     Command.checkArgs(args);
@@ -28,17 +28,22 @@ async function main() {
 
     if (!args._.length) {
         Logger.info("No command set, run Transpile / Compile / Build rom.")
-        await Command.ALL(path)
+        Command.ALL(path);
     } else {
         const command = args._[0].toLowerCase();
         switch (command) {
+            case 'transpile': {
+                Logger.info("Run command compile : Transpile.")
+                Command.TRANSPILE(path);
+                break;
+            }
             case "compile" :
                 Logger.info("Run command compile : Compile / Build rom.")
-                await Command.COMPILE(path);
+                Command.COMPILE(path);
                 break;
             case "build" :
                 Logger.info("Run command compile : Build rom.")
-                await Command.BUILD(path);
+                Command.BUILD(path);
                 break;
             default:
                 Logger.error("Command " + command + " unknown.");
@@ -48,4 +53,4 @@ async function main() {
 
 }
 
-main().then();
+main();
