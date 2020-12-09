@@ -9,6 +9,7 @@ export class Command {
 
     static ALL = (path: string) => {
         return Command.transpile(path)
+            .then(() => Command.fixHeaders(path))
             .then(() => Command.makeGBDKN())
             .then(() => Command.compile(path))
             .then(() => Command.link(path))
@@ -21,6 +22,7 @@ export class Command {
 
     static TRANSPILE = (path: string) =>
         Command.transpile(path)
+            .then(() => Command.fixHeaders(path))
             .catch((error) => {
                 Logger.stopLoading();
                 Logger.error(error);
@@ -143,7 +145,7 @@ export class Command {
                 process.chdir(processRoot);
                 return resolve();
             } catch (error) {
-                return reject(`Error while editing links\nError ${error.code}`);
+                return reject(`Error while editing links\nError ${error}`);
             }
 
         });
@@ -166,8 +168,35 @@ export class Command {
                 process.chdir(processRoot);
                 return resolve();
             } catch (error) {
-                return reject(`Error while making rom\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
+                return reject(`Error while making rom\nError ${error}`);
             }
+        });
+
+    }
+
+    private static fixHeaders(filePath: string) {
+        return new Promise((resolve, reject) => {
+            Logger.startLoading('Fixing headers');
+
+            filePath = this.computeAbsolutePath(filePath);
+            filePath = filePath.replace(".ts", "");
+
+            try {
+                fs.openSync(`${filePath}.c`, "a+");
+                const data = fs.readFileSync(`${filePath}.c`);
+                const fd = fs.openSync(`${filePath}.c`, 'w+');
+                const buffer = new Buffer('#include <gb/gb.h>\n');
+
+                fs.writeSync(fd, buffer, 0, buffer.length, 0);
+                fs.writeSync(fd, data, 0, data.length, buffer.length);
+                fs.close(fd, () => {});
+                Logger.success(`Fixing headers done`);
+                return resolve();
+            } catch(error) {
+                return reject(`Error while fixing headers \nError ${error}`);
+
+            }
+
         });
 
     }
