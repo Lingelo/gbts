@@ -69,8 +69,12 @@ You should see the following image appear :
 
 Congrats !   
 
-## works in progress
+## Works in progress - your help is appreciated !
 
-* I am working on the use of gbdk libraries (gb / gb.h for example). Compiling by referring to headers does not work for the moment: [See issue here](https://github.com/andrei-markeev/ts2c-target-esp-idf/issues/1)
-* I am trying to deploy gbts as a node module. An error occurs on Windows when launching the gbts command once deployed.
+* The use of the gbdk libraries (gb / gb.h for example) is approximate...
+Compiling by referring to headers does not work for the moment: [See issue here](https://github.com/andrei-markeev/ts2c-target-esp-idf/issues/1)
+Current workaround: Added headers after transpilation process.  
+
+* Deploy GBTS as a node module is KO. An error occurs on Windows when launching the gbts command once deployed.
 See : [Stackoverflow issue](https://stackoverflow.com/questions/65136317/installing-locally-and-globally-a-npm-depency-produces-an-error-while-executing).
+Help is welcome ! 
