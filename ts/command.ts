@@ -3,13 +3,14 @@ import fs from 'fs';
 import path from 'path';
 import {Logger} from "./logger";
 
+const ts2c = require('ts2c');
+
 const processRoot = process.cwd();
 
 export class Command {
 
     static ALL = (path: string) => {
         return Command.transpile(path)
-            .then(() => Command.fixHeaders(path))
             .then(() => Command.makeGBDKN())
             .then(() => Command.compile(path))
             .then(() => Command.link(path))
@@ -22,7 +23,6 @@ export class Command {
 
     static TRANSPILE = (path: string) =>
         Command.transpile(path)
-            .then(() => Command.fixHeaders(path))
             .catch((error) => {
                 Logger.stopLoading();
                 Logger.error(error);
@@ -65,18 +65,16 @@ export class Command {
                 return reject(`File ${filePath} does not exist`);
             }
 
-            const directory = path.dirname(filePath);
-
-            //TODO ts2c dont work with absolute paths ... produce max stack size exceeded
-            process.chdir(directory);
-
             try {
-                child_process.execSync(`npx ts2c ${path.basename(filePath)}`, {stdio: 'inherit'});
+                const fileName = path.parse(filePath).name;
+                const data = fs.readFileSync(filePath).toString();
+                const dirname = path.dirname(filePath);
+                const cCode = ts2c.transpile(data);
+                fs.writeFileSync(dirname + "/" + fileName + ".c", cCode);
                 Logger.success(`Transpilation of ${path.basename(filePath)} done`);
-                process.chdir(processRoot);
                 return resolve();
             } catch (error) {
-                return reject(`Error while processing transpilation\nError code${error.code}\nSignal received${error.signal}\nStack${error.stack}`);
+                return reject(`Error while processing transpilation\nError ${error}`);
             }
 
         })
@@ -98,7 +96,7 @@ export class Command {
                 child_process.execSync(`make`, {stdio: 'ignore'});
                 Logger.success(`GBDK (GameBoy SDK) compilation done`);
                 return resolve()
-            } catch(error) {
+            } catch (error) {
                 return reject(`Error while compiling GBDK (GameBoy SDK)\n${error}`);
             }
 
@@ -170,33 +168,6 @@ export class Command {
             } catch (error) {
                 return reject(`Error while making rom\nError ${error}`);
             }
-        });
-
-    }
-
-    private static fixHeaders(filePath: string) {
-        return new Promise((resolve, reject) => {
-            Logger.startLoading('Fixing headers');
-
-            filePath = this.computeAbsolutePath(filePath);
-            filePath = filePath.replace(".ts", "");
-
-            try {
-                fs.openSync(`${filePath}.c`, "a+");
-                const data = fs.readFileSync(`${filePath}.c`);
-                const fd = fs.openSync(`${filePath}.c`, 'w+');
-                const buffer = new Buffer('#include <gb/gb.h>\n');
-
-                fs.writeSync(fd, buffer, 0, buffer.length, 0);
-                fs.writeSync(fd, data, 0, data.length, buffer.length);
-                fs.close(fd, () => {});
-                Logger.success(`Fixing headers done`);
-                return resolve();
-            } catch(error) {
-                return reject(`Error while fixing headers \nError ${error}`);
-
-            }
-
         });
 
     }

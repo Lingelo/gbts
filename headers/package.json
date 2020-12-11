@@ -1,0 +1,13 @@
+{
+  "name": "gbts-headers",
+  "version": "0.0.1",
+  "description": "GBTS Headers",
+  "main": "",
+  "types": "index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Angélo LIMA",
+  "license": "ISC"
+}
