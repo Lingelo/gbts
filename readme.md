@@ -67,7 +67,9 @@ You should see the following image appear :
  
 ![Hello world](doc/hello.png)  
 
-Congrats !   
+Congrats !  
+
+See more examples here : [https://github.com/Freuhlon/gbts-projects](https://github.com/Freuhlon/gbts-projects)
 
 ## Works in progress - your help is appreciated !
 
