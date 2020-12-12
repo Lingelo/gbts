@@ -22,7 +22,7 @@ const yargs = require("yargs")
     .locale("en")
     .argv;
 
-function main() {
+export function main() {
     const args = parse(process.argv.slice(2));
 
     Command.checkArgs(args);
