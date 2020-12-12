@@ -1,7 +1,6 @@
 {
-  "private": true,
   "name": "gbts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool that allows you to write GameBoy games on TypeScript !",
   "author": "Angélo LIMA",
   "license": "ISC",

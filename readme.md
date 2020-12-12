@@ -71,8 +71,3 @@ Congrats !
 
 See more examples here : [https://github.com/Freuhlon/gbts-projects](https://github.com/Freuhlon/gbts-projects)
 
-## Works in progress - your help is appreciated !
-
-* Deploy GBTS as a node module is KO. An error occurs on Windows when launching the gbts command once deployed.
-See : [Stackoverflow issue](https://stackoverflow.com/questions/65136317/installing-locally-and-globally-a-npm-depency-produces-an-error-while-executing).
-Help is welcome ! 
