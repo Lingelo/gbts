@@ -1,54 +1,41 @@
-import child_process from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import {Logger} from "./logger";
+import child_process from "child_process";
+import fs from "fs";
+import path from "path";
 
-const ts2c = require('ts2c');
+const ts2c = require("ts2c");
+import {Logger} from "./logger";
 
 const processRoot = process.cwd();
 
 export class Command {
 
-    static ALL = (path: string) => {
-        return Command.transpile(path)
+    public static ALL = (typeScriptFilePath: string) => {
+        return Command.transpile(typeScriptFilePath)
             .then(() => Command.makeGBDKN())
-            .then(() => Command.compile(path))
-            .then(() => Command.link(path))
-            .then(() => Command.makeRom(path))
-            .catch((error) => {
-                Logger.stopLoading();
-                Logger.error(error);
-            });
+            .then(() => Command.compile(typeScriptFilePath))
+            .then(() => Command.link(typeScriptFilePath))
+            .then(() => Command.makeRom(typeScriptFilePath));
+
     }
 
-    static TRANSPILE = (path: string) =>
-        Command.transpile(path)
-            .catch((error) => {
-                Logger.stopLoading();
-                Logger.error(error);
-            })
+    public static TRANSPILE = (typeScriptFilePath: string) =>
+        Command.transpile(typeScriptFilePath)
 
-    static COMPILE = (path: string) => {
+    public static COMPILE = (typeScriptFilePath: string) => {
         return Command.makeGBDKN()
-            .then(() => Command.compile(path))
-            .then(() => Command.link(path))
-            .then(() => Command.makeRom(path))
-            .catch((error) => {
-                Logger.stopLoading();
-                Logger.error(error);
-            });
+            .then(() => Command.compile(typeScriptFilePath))
+            .then(() => Command.link(typeScriptFilePath))
+            .then(() => Command.makeRom(typeScriptFilePath));
+
     }
 
-    static BUILD = (path: string) => {
-        return Command.makeRom(path)
-            .catch((error) => {
-                Logger.stopLoading();
-                Logger.error(error);
-            });
+    public static BUILD = (typeScriptFilePath: string) => {
+        return Command.makeRom(typeScriptFilePath);
+
     }
 
-    static checkArgs(args: any): void {
-        if (!args['path']) {
+    public static checkArgs(args: any): void {
+        if (!args.path) {
             Logger.error("Path is mandatory !");
             process.exit(0);
         }
@@ -56,7 +43,7 @@ export class Command {
 
     private static transpile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
-            Logger.startLoading('Starting transpilation from .ts to .c');
+            Logger.startLoading("Starting transpilation from .ts to .c");
 
             filePath = this.computeAbsolutePath(filePath);
 
@@ -77,13 +64,13 @@ export class Command {
                 return reject(`Error while processing transpilation\nError ${error}`);
             }
 
-        })
+        });
     }
 
     private static makeGBDKN(): Promise<string | object> {
 
         return new Promise((resolve, reject) => {
-            Logger.startLoading('Compiling GBDK (GameBoy SDK)');
+            Logger.startLoading("Compiling GBDK (GameBoy SDK)");
 
             if (!fs.existsSync(`${processRoot}/bin/gbdk-n-master`)) {
                 Logger.stopLoading();
@@ -93,9 +80,9 @@ export class Command {
             process.chdir(`${processRoot}/bin/gbdk-n-master`);
 
             try {
-                child_process.execSync(`make`, {stdio: 'ignore'});
+                child_process.execSync(`make`, {stdio: "ignore"});
                 Logger.success(`GBDK (GameBoy SDK) compilation done`);
-                return resolve()
+                return resolve();
             } catch (error) {
                 return reject(`Error while compiling GBDK (GameBoy SDK)\n${error}`);
             }
@@ -106,15 +93,15 @@ export class Command {
 
     private static compile(filePath: string): Promise<string | object> {
         return new Promise((resolve, reject) => {
-            Logger.startLoading('Compiling sources');
+            Logger.startLoading("Compiling sources");
             filePath = this.computeAbsolutePath(filePath);
-            filePath = filePath.replace(".ts", "")
+            filePath = filePath.replace(".ts", "");
 
             const directory = path.dirname(filePath);
             process.chdir(directory);
 
             try {
-                let command = `${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`;
+                const command = `${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`;
                 child_process.execSync(command);
                 Logger.success(`Compiling source done`);
                 process.chdir(processRoot);
@@ -125,14 +112,13 @@ export class Command {
         });
     }
 
-
     private static link(filePath: string): Promise<string | object> {
 
         return new Promise((resolve, reject) => {
-            Logger.startLoading('Editing links');
+            Logger.startLoading("Editing links");
 
             filePath = this.computeAbsolutePath(filePath);
-            filePath = filePath.replace(".ts", "")
+            filePath = filePath.replace(".ts", "");
 
             const directory = path.dirname(filePath);
             process.chdir(directory);
@@ -152,10 +138,10 @@ export class Command {
     private static makeRom(filePath: string) {
 
         return new Promise((resolve, reject) => {
-            Logger.startLoading('Building rom');
+            Logger.startLoading("Building rom");
 
             filePath = this.computeAbsolutePath(filePath);
-            filePath = filePath.replace(".ts", "")
+            filePath = filePath.replace(".ts", "");
 
             const directory = path.dirname(filePath);
             process.chdir(directory);

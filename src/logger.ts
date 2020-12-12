@@ -1,17 +1,17 @@
-import ora from 'ora';
+import ora from "ora";
 
 export class Logger {
 
-    static instance = ora({
-        color: 'yellow',
+    public static instance = ora({
+        color: "yellow",
         spinner: {
-            frames: ['···', '•··', '••·', '•••'],
-            interval: 250
-        }
+            frames: ["···", "•··", "••·", "•••"],
+            interval: 250,
+        },
     });
 
     public static success(text: string) {
-        this.instance.succeed(text)
+        this.instance.succeed(text);
     }
 
     public static error(text: string) {
@@ -26,7 +26,7 @@ export class Logger {
         this.instance.stopAndPersist();
     }
 
-    static info(text: string) {
+    public static info(text: string) {
         this.instance.info(text);
     }
 }

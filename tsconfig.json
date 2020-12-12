@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "ts",
     "outDir": "dist",
     "target": "es2019",
     "lib": [
@@ -12,5 +11,7 @@
     "declaration": true,
     "sourceMap": true,
     "noImplicitAny": false
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["__tests__/*.spec.ts"]
 }
