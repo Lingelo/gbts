@@ -73,7 +73,7 @@ describe("Command transpile tests", () => {
             const contentFile = fs.readFileSync(`${fullRootPathTests}/hello.c`);
             const cContentFileExpected = fs.readFileSync(`${expectedDirectory}/hello.c`);
 
-            expect(contentFile.toString()).toEqual(cContentFileExpected.toString());
+            expect(contentFile.toString()).toBe(cContentFileExpected.toString());
         } catch (error) {
             fail(error);
         }
