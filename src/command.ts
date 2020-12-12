@@ -1,5 +1,6 @@
 import child_process from "child_process";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 const ts2c = require("ts2c");
@@ -101,7 +102,7 @@ export class Command {
             process.chdir(directory);
 
             try {
-                const command = `${processRoot}/bin/gbdk-n-master/bin/gbdk-n-compile.bat ${filePath}.c`;
+                const command = `${processRoot}/bin/gbdk-n-master/bin/${this.useCommandForCorrectOS("gbdk-n-compile")} ${filePath}.c`;
                 child_process.execSync(command);
                 Logger.success(`Compiling source done`);
                 process.chdir(processRoot);
@@ -124,7 +125,7 @@ export class Command {
             process.chdir(directory);
 
             try {
-                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-link.bat ${filePath}.rel -o ${filePath}.ihx`);
+                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/${this.useCommandForCorrectOS("gbdk-n-link")} ${filePath}.rel -o ${filePath}.ihx`);
                 Logger.success(`Editing links done`);
                 process.chdir(processRoot);
                 return resolve();
@@ -147,7 +148,7 @@ export class Command {
             process.chdir(directory);
 
             try {
-                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/gbdk-n-make-rom.bat ${filePath}.ihx ${filePath}.gb`);
+                child_process.execSync(`${processRoot}/bin/gbdk-n-master/bin/${this.useCommandForCorrectOS("gbdk-n-make-rom")} ${filePath}.ihx ${filePath}.gb`);
                 Logger.success(`Building rom done`);
                 process.chdir(processRoot);
                 return resolve();
@@ -163,5 +164,9 @@ export class Command {
             path.join(__dirname, path.basename(filePath));
         }
         return filePath;
+    }
+
+    private static useCommandForCorrectOS(command: string) {
+        return os.platform().toString() === "win32" ? command.concat(".bat") : command.concat(".sh");
     }
 }
