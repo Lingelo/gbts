@@ -30,7 +30,11 @@ function main() {
 
     if (!args._.length) {
         Logger.info("No command set, run Transpile / Compile / Build rom.");
-        Command.ALL(path);
+        Command.ALL(path)
+            .catch((error) => {
+                Logger.stopLoading();
+                Logger.error(error);
+            });
     } else {
         const command = args._[0].toLowerCase();
         switch (command) {
