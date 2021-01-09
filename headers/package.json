@@ -1,6 +1,6 @@
 {
-  "name": "gbts-headers",
-  "version": "1.0.1",
+  "name": "ts2c-target-gbts",
+  "version": "1.0.0",
   "description": "GBTS Headers",
   "main": "",
   "types": "index",

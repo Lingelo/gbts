@@ -1,6 +1,6 @@
 {
   "name": "gbts",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "CLI tool that allows you to write GameBoy games on TypeScript !",
   "author": "Angélo LIMA",
   "license": "ISC",
@@ -35,7 +35,7 @@
     "minimist": "1.2.5",
     "ora": "5.1.0",
     "request": "2.88.0",
-    "ts2c": "2.2.2",
+    "ts2c": "2.2.9",
     "yargs": "16.1.1"
   },
   "devDependencies": {
