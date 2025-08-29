@@ -1,0 +1,30 @@
+{
+  "providers": {
+    "primary": "claude",
+    "fallback": [
+      "openai",
+      "local"
+    ],
+    "local": {
+      "endpoint": "http://localhost:11434/api/generate",
+      "model": "codellama:7b",
+      "temperature": 0.1,
+      "maxTokens": 4000
+    }
+  },
+  "caching": {
+    "enabled": true,
+    "maxSize": 1000,
+    "ttl": 86400000
+  },
+  "budget": {
+    "maxCostPerTranspilation": 0.1,
+    "dailyBudget": 5,
+    "preferLocal": false
+  },
+  "quality": {
+    "minScore": 0.7,
+    "requireValidation": true,
+    "enableLearning": true
+  }
+}

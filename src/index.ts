@@ -1,74 +1,80 @@
 #!/usr/bin/env node
-import parse from "minimist";
-import {Command} from "./command";
-import {Logger} from "./logger";
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+import { Command } from './command'
+import { Logger } from './logger'
 
-const yargs = require("yargs")
-    .scriptName("gbts")
-    .usage("Usage: $0 <command> [options]")
-    .command("all (or empty)", "Run all commands : Transpile / Compile / Build rom")
-    .command("transpile", "Run commands : Transpile")
-    .command("compile", "Run commands : Compile / Build rom")
-    .command("build", "Run command : Build rom")
-    .example("$0 --path <path>", "Transpile / Compile / Build rom from a .ts file")
-    .example("$0 all --path <path>", "Transpile / Compile / Build rom from a .ts file")
-    .example("$0 transpile --path <path>", "Transpile from a .ts file")
-    .example("$0 compile --path <path>", "Compile / Build rom from a .ts file")
-    .example("$0 build --path <path>", "Build rom from a .ts file")
-    .option("path", {
-        description: "Path to .ts file",
-        type: "string",
-    })
-    .locale("en")
-    .argv;
+const argv = yargs(hideBin(process.argv))
+  .scriptName('gbts')
+  .usage('🤖 AI-powered TypeScript to GameBoy C converter\n\nSupports single files and entire projects with intelligent chunking!\n\nUsage: $0 <command> [options]')
+  .command('all', '🚀 Run full pipeline: AI Transpile → Compile → Build ROM', {}, () => {})
+  .command('transpile', '🤖 AI-powered TypeScript to C conversion (supports projects)', {}, () => {})
+  .command('compile', '⚙️  Compile and build GameBoy ROM', {}, () => {})
+  .command('build', '🔧 Build GameBoy ROM only', {}, () => {})
+  .example('$0 --path hello.ts', '🎮 Single file: AI transpile, compile, and build ROM')
+  .example('$0 --path ./my-game/', '🎮 Entire project: Process all .ts files in directory')
+  .example('$0 all --path ./src/', '🎮 Project pipeline with multi-file support')
+  .example('$0 transpile --path input.ts', '🤖 AI conversion only (with auto-chunking for large files)')
+  .example('$0 transpile --path ./project/', '🤖 Batch convert entire project directory')
+  .option('path', {
+    description: 'Path to TypeScript file or project directory',
+    type: 'string',
+    demandOption: true,
+    alias: 'p',
+  })
+  .help('h')
+  .alias('h', 'help')
+  .version()
+  .locale('en')
+  .parseSync()
 
-export function main() {
-    const args = parse(process.argv.slice(2));
+export async function main(): Promise<void> {
+  try {
+    const path = argv.path
 
-    Command.checkArgs(args);
-    const path = args.path;
-
-    if (!args._.length) {
-        Logger.info("No command set, run Transpile / Compile / Build rom.");
-        Command.ALL(path)
-            .catch((error) => {
-                Logger.stopLoading();
-                Logger.error(error);
-            });
-    } else {
-        const command = args._[0].toLowerCase();
-        switch (command) {
-            case "transpile": {
-                Logger.info("Run command compile : Transpile.");
-                Command.TRANSPILE(path)
-                    .catch((error) => {
-                        Logger.stopLoading();
-                        Logger.error(error);
-                    });
-                break;
-            }
-            case "compile" :
-                Logger.info("Run command compile : Compile / Build rom.");
-                Command.COMPILE(path)
-                    .catch((error) => {
-                        Logger.stopLoading();
-                        Logger.error(error);
-                    });
-                break;
-            case "build" :
-                Logger.info("Run command compile : Build rom.");
-                Command.BUILD(path)
-                    .catch((error) => {
-                        Logger.stopLoading();
-                        Logger.error(error);
-                    });
-                break;
-            default:
-                Logger.error("Command " + command + " unknown.");
-
-        }
+    if (!path) {
+      Logger.error('Path is mandatory!')
+      process.exit(1)
     }
 
+    // Get the command from argv._ (first positional argument)
+    const command = argv._[0]?.toString().toLowerCase()
+
+    if (!command || command === 'all') {
+      Logger.info('🚀 Running full AI-powered GameBoy development pipeline')
+      await Command.ALL(path)
+    } else {
+      switch (command) {
+        case 'transpile': {
+          Logger.info('🤖 Running AI-powered transpilation')
+          await Command.TRANSPILE(path)
+          break
+        }
+        case 'compile': {
+          Logger.info('⚙️  Running compile and build')
+          await Command.COMPILE(path)
+          break
+        }
+        case 'build': {
+          Logger.info('🔧 Building GameBoy ROM')
+          await Command.BUILD(path)
+          break
+        }
+        default:
+          Logger.error(`❌ Unknown command: ${command}`)
+          Logger.info('💡 Available commands: all, transpile, compile, build')
+          process.exit(1)
+      }
+    }
+  } catch (error) {
+    Logger.stopLoading()
+    if (error instanceof Error) {
+      Logger.error(`💥 ${error.message}`)
+    } else {
+      Logger.error('💥 An unknown error occurred')
+    }
+    process.exit(1)
+  }
 }
 
-main();
+void main()

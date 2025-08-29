@@ -1,17 +1,32 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "target": "es2019",
-    "lib": [
-      "es2019"
-    ],
-    "module": "commonjs",
+    "target": "ES2022",
+    "lib": ["ES2022", "ES2022.Error"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
-    "noImplicitAny": false
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["__tests__/*.spec.ts"]
+  "exclude": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "__tests__/tmp/**/*"
+  ]
 }

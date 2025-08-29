@@ -1,17 +1,15 @@
 const fs = require("fs");
-const request = require("request");
-const ora = require("ora");
+const https = require("https");
 const AdmZip = require("adm-zip");
 
 const dir = process.cwd() + "/bin";
 
-const logger = ora({
-    color: 'yellow',
-    spinner: {
-        frames: ['···', '•··', '••·', '•••'],
-        interval: 250
-    }
-});
+// Simple logger replacement for modern ora compatibility
+const logger = {
+    start: (msg) => console.log(`🔄 ${msg}`),
+    succeed: (msg) => console.log(`✅ ${msg}`),
+    fail: (msg) => console.log(`❌ ${msg}`)
+};
 
 async function main() {
     try {
@@ -36,18 +34,39 @@ async function download() {
         const file = fs.createWriteStream(process.cwd() + "/bin/gbdk-n-master.zip");
 
 
-        request.get({
-            uri: 'https://github.com/andreasjhkarlsson/gbdk-n/archive/master.zip'
+        function downloadFile(url, file, callback) {
+            https.get(url, (response) => {
+                // Handle redirects
+                if (response.statusCode === 301 || response.statusCode === 302) {
+                    return downloadFile(response.headers.location, file, callback);
+                }
+                
+                if (response.statusCode !== 200) {
+                    callback(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
+                    return;
+                }
+                
+                response.pipe(file);
+                
+                file.on("finish", function () {
+                    file.close();
+                    callback(null);
+                });
+                
+                file.on("error", callback);
+            }).on('error', callback);
+        }
+
+        downloadFile('https://github.com/andreasjhkarlsson/gbdk-n/archive/master.zip', file, (error) => {
+            if (error) {
+                fs.unlink(process.cwd() + "/bin/gbdk-n-master.zip", () => {});
+                logger.fail(`Download error: ${error.message}`);
+                return reject(error);
+            }
+            
+            logger.succeed("File downloaded.");
+            return resolve();
         })
-            .pipe(file)
-            .on("finish", function () {
-                logger.succeed("File downloaded.");
-                return resolve();
-            })
-            .on("error", function (error) {
-                logger.fail(`Impossible to download file${error}`);
-                return reject();
-            })
     });
 
 

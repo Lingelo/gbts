@@ -1,5 +1,65 @@
-.idea
+# Dependencies
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
 dist/
-bin/
+build/
+*.tsbuildinfo
+
+# Coverage
 coverage/
+*.lcov
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test files
+__tests__/tmp/
+
+# GameBoy build artifacts
+*.gb
+*.c
+*.rel
+*.ihx
+*.sym
+*.lst
+*.map
+
+# GBDK
+bin/
+
+# Husky
+.husky/_/
