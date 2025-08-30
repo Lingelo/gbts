@@ -4,11 +4,17 @@
 
 Arrêtez d'écrire vos ROMs GameBoy en C - écrivez-les en TypeScript et laissez l'IA gérer la conversion !
 
-## 🚀 Nouveautés de la v2.0
+## 🚀 Évolution : De ts2c à l'IA Pure
 
-GBTS 2.0 est une réécriture complète avec :
+**GBTS v1.0** utilisait une approche hybride avec le transpiler ts2c pour la conversion TypeScript → C, puis GBDK pour la compilation GameBoy. Bien que fonctionnel, cette méthode présentait des limitations :
+- Conversions parfois imprécises nécessitant des ajustements manuels
+- Syntaxe TypeScript limitée supportée
+- Optimisations GameBoy insuffisantes
+- Pas de support pour les projets multi-fichiers
+
+**GBTS 2.0** révolutionne complètement l'approche avec :
 - **Transpilation 100% alimentée par l'IA** utilisant Claude 3.5 Sonnet et GPT-4
-- **Finies les dépendances ts2c** - conversion IA pure avec prompts optimisés GameBoy  
+- **Abandon complet de ts2c** - conversion IA pure avec prompts optimisés GameBoy  
 - **🆕 SUPPORT PROJET COMPLET** - Traitement de dossiers avec plusieurs fichiers TypeScript
 - **🆕 CHUNKING INTELLIGENT** - Gros fichiers automatiquement divisés pour surmonter les limites de tokens
 - **🆕 RÉSOLUTION DE DÉPENDANCES** - Fichiers traités dans l'ordre correct des imports/exports
