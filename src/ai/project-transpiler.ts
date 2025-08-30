@@ -1,4 +1,5 @@
 import { ProjectAnalyzer } from './project-analyzer'
+import { ProjectSchemaGenerator } from './project-schema-generator'
 import { AITranspiler } from './ai-transpiler'
 import { Logger } from '../logger'
 import path from 'path'
@@ -8,6 +9,7 @@ import type {
   GameBoyContext,
   ProjectContext,
   ProjectFile,
+  ProjectSchema,
   CodeChunk,
   ChunkedTranspilationResult,
   ChunkResult,
@@ -17,6 +19,7 @@ import type {
 
 export class ProjectTranspiler {
   private analyzer: ProjectAnalyzer
+  private schemaGenerator: ProjectSchemaGenerator
   private transpiler: AITranspiler
   private config: AITranspilerConfig
 
@@ -26,6 +29,7 @@ export class ProjectTranspiler {
       config.project.maxFileSize,
       config.project.chunkSize,
     )
+    this.schemaGenerator = new ProjectSchemaGenerator()
     this.transpiler = new AITranspiler(config)
   }
 
@@ -36,11 +40,19 @@ export class ProjectTranspiler {
   ): Promise<ProjectTranspilationResult> {
     Logger.startLoading('🔍 Analyzing project structure...')
 
-    // Analyze the project
+    // PASS 1: Analyze the project and build global schema
     const projectContext = await this.analyzer.analyzeProject(inputPath)
 
     Logger.stopLoading()
     Logger.success(`📁 Found ${projectContext.files.length} TypeScript files`)
+
+    Logger.startLoading('🧠 Building global project schema...')
+
+    // Generate comprehensive project schema for context
+    const projectSchema = this.schemaGenerator.generateSchema(projectContext)
+
+    Logger.stopLoading()
+    Logger.success(`🗺️ Global schema created with ${projectSchema.globalTypes.size} types, ${projectSchema.globalFunctions.size} functions`)
 
     // Log chunking info
     const totalChunks = projectContext.files.reduce((sum, file) =>
@@ -50,7 +62,8 @@ export class ProjectTranspiler {
       Logger.info(`🧩 Files chunked: ${totalChunks} total chunks (max ${this.config.project.chunkSize} chars per chunk)`)
     }
 
-    Logger.startLoading('🤖 Starting AI-powered project transpilation...')
+    // PASS 2: Transpile with global context
+    Logger.startLoading('🤖 Starting AI-powered project transpilation with global context...')
 
     const startTime = Date.now()
     const fileResults: ChunkedTranspilationResult[] = []
@@ -66,7 +79,7 @@ export class ProjectTranspiler {
 
       Logger.info(`📝 Processing ${file.relativePath} (${i + 1}/${orderedFiles.length})`)
 
-      const fileResult = await this.transpileFile(file, projectContext, context, options)
+      const fileResult = await this.transpileFile(file, projectContext, projectSchema, context, options)
       fileResults.push(fileResult)
 
       totalCost += fileResult.totalCost
@@ -101,6 +114,7 @@ export class ProjectTranspiler {
   private async transpileFile(
     file: ProjectFile,
     projectContext: ProjectContext,
+    projectSchema: ProjectSchema,
     gameBoyContext: GameBoyContext,
     options: { useCache?: boolean; maxRetries?: number },
   ): Promise<ChunkedTranspilationResult> {
@@ -118,7 +132,7 @@ export class ProjectTranspiler {
     let totalDuration = 0
 
     for (const chunk of chunks) {
-      const chunkContext = this.buildChunkContext(chunk, file, projectContext, gameBoyContext)
+      const chunkContext = this.buildChunkContext(chunk, file, projectContext, projectSchema, gameBoyContext)
 
       try {
         const result = await this.transpiler.transpile(
@@ -166,15 +180,19 @@ export class ProjectTranspiler {
     chunk: CodeChunk,
     file: ProjectFile,
     projectContext: ProjectContext,
+    projectSchema: ProjectSchema,
     gameBoyContext: GameBoyContext,
   ): GameBoyContext {
-    // Enhanced context with project information
+    // Build enriched context with global project knowledge
+    const contextSummary = this.schemaGenerator.buildChunkContextSummary(chunk, file, projectSchema)
+
     return {
       ...gameBoyContext,
-      // Add context about other files and exports available
+      // Enhanced context with global project schema
+      projectContext: contextSummary,
       memoryLayout: {
         ...gameBoyContext.memoryLayout,
-        // Optimize based on chunk type
+        // Optimize based on chunk type and project structure
         zeroPage: chunk.type === 'function' ? [`${chunk.type}_vars`] : [],
         workRam: file.exports,
         romBank: gameBoyContext.currentBank,

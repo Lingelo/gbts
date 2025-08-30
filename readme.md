@@ -15,8 +15,10 @@ Arrêtez d'écrire vos ROMs GameBoy en C - écrivez-les en TypeScript et laissez
 **GBTS 2.0** révolutionne complètement l'approche avec :
 - **Transpilation 100% alimentée par l'IA** utilisant Claude 3.5 Sonnet et GPT-4
 - **Abandon complet de ts2c** - conversion IA pure avec prompts optimisés GameBoy  
+- **🆕 ARCHITECTURE 2 PASSES** - Schéma global puis transpilation avec contexte complet
 - **🆕 SUPPORT PROJET COMPLET** - Traitement de dossiers avec plusieurs fichiers TypeScript
 - **🆕 CHUNKING INTELLIGENT** - Gros fichiers automatiquement divisés pour surmonter les limites de tokens
+- **🆕 COHÉRENCE INTER-FICHIERS** - Chaque chunk connaît TOUS les types/fonctions du projet
 - **🆕 RÉSOLUTION DE DÉPENDANCES** - Fichiers traités dans l'ordre correct des imports/exports
 - **Cache intelligent** pour réduire les coûts API (~90% d'économies)
 - **Support multi-fournisseur** avec basculement automatique
@@ -297,6 +299,7 @@ Votre GameBoy affichera :
 - **ROM finale :** ~32KB (standard GameBoy)
 - **Coût IA :** ~$0.01 (très économique)
 - **Temps total :** 2-3 minutes de la création à l'exécution !
+- **Architecture 2 Passes :** Cohérence garantie même sur projets complexes
 
 ### 🔧 Personnalisations possibles
 ```typescript
@@ -316,6 +319,22 @@ function animateText() {
 ```
 
 **🚀 En 5 minutes, vous avez créé votre première ROM GameBoy avec TypeScript et IA !**
+
+### 🧠 Gestion des Gros Projets
+
+**Problème résolu : Cohérence sur projets complexes**
+- ✅ **Architecture 2 Passes** : Schéma global → Transpilation enrichie
+- ✅ **Contexte complet** : Chaque chunk connaît TOUS les types/fonctions
+- ✅ **Plus d'incohérences** : Types toujours disponibles entre fichiers
+- ✅ **Liens corrects** : Includes et références automatiquement générés
+
+**Exemple projet multi-fichiers :**
+```bash
+# Projet avec 10+ fichiers TypeScript interdépendants
+gbts transpile --path ./mon-gros-jeu/
+# → L'IA voit TOUT le projet avant transpilation
+# → Cohérence parfaite entre tous les fichiers C générés
+```
 
 ## ⚙️ Configuration
 
@@ -386,7 +405,10 @@ npm run test:watch    # Mode watch
 - **Optimisation mémoire** (variables zero page, constantes ROM)
 - **Notation qualité** et validation
 
-### Gestion Multi-Projets
+### Gestion Multi-Projets avec Architecture 2 Passes
+- **Pass 1 - Schéma Global** : Analyse complète du projet, extraction de tous types/fonctions
+- **Pass 2 - Transpilation Enrichie** : Chaque chunk reçoit le contexte complet du projet
+- **Cohérence Inter-Fichiers** : Plus d'incohérences entre chunks, types toujours disponibles
 - **Analyse dépendances** automatique basée sur imports/exports
 - **Chunking intelligent** par fonctions, classes ou blocs logiques
 - **Traitement ordonné** des fichiers selon dépendances

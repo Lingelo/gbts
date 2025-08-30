@@ -39,19 +39,26 @@ gbts transpile --path large-game.ts
 ## Architecture Overview
 
 ### AI-Powered Transpilation System
-The core architecture supports both single files and entire projects with intelligent chunking:
+The core architecture uses a revolutionary **Two-Pass Approach** for maximum coherence on large projects:
 
 **Core Components:**
 - **AITranspiler** (`src/ai/ai-transpiler.ts`) - Single file transpilation with caching and budget management
-- **ProjectTranspiler** (`src/ai/project-transpiler.ts`) - Multi-file project transpilation with dependency resolution
+- **ProjectTranspiler** (`src/ai/project-transpiler.ts`) - Two-pass multi-file transpilation with global context
+- **ProjectSchemaGenerator** (`src/ai/project-schema-generator.ts`) - **NEW!** Global project schema creation for context coherence
 - **ProjectAnalyzer** (`src/ai/project-analyzer.ts`) - Code analysis, chunking, and dependency mapping
 - **Providers** (`src/ai/providers/`) - Claude, OpenAI, and OpenRouter implementations with official SDKs
 - **GameBoyPromptEngine** (`src/ai/prompt-engine.ts`) - Specialized prompts with GameBoy hardware constraints
 
+**Two-Pass Architecture for Large Projects:**
+- **Pass 1 - Global Schema Generation**: Analyze entire project, extract all types/functions/interfaces across all files
+- **Pass 2 - Context-Aware Transpilation**: Each chunk receives complete project context for perfect coherence
+
 **Key Features:**
 - **Multi-file Support**: Process entire directories recursively (skips node_modules, dist, .git)
 - **Intelligent Chunking**: Large files (>8KB) automatically split by functions, classes, or logical blocks
+- **Global Context Awareness**: Every chunk knows about types/functions from ALL other files
 - **Dependency Resolution**: Files processed in correct order based on import/export relationships
+- **Cross-File Coherence**: Eliminates naming inconsistencies and missing definitions
 - **Modular Output**: Option to generate 1 .c file per .ts file or single combined file
 
 ### Configuration System

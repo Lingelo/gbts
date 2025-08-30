@@ -14,6 +14,7 @@ export interface GameBoyContext {
   features: GameBoyFeature[];
   memoryLayout?: MemoryLayout;
   optimizeFor: 'size' | 'speed' | 'balance';
+  projectContext?: string; // Global project schema for multi-file coherence
 }
 
 export type GameBoyFeature =
@@ -122,6 +123,39 @@ export interface TranspilationExample {
   performance: PerformanceMetrics;
   timestamp: number;
   provider: string;
+}
+
+// Project Schema Types for Two-Pass Approach
+export interface ProjectSchema {
+  files: Record<string, FileSchema>;
+  globalTypes: Map<string, TypeDefinition>;
+  globalFunctions: Map<string, FunctionSignature>;
+  globalVariables: Map<string, string>;
+  dependencies: DependencyMap;
+  summary: string;
+}
+
+export interface FileSchema {
+  types: Map<string, TypeDefinition>;
+  functions: Map<string, FunctionSignature>;
+  variables: Map<string, string>;
+  imports: FileImport[];
+  exports: string[];
+}
+
+export interface TypeDefinition {
+  name: string;
+  type: 'interface' | 'type' | 'class' | 'enum';
+  definition: string;
+  filePath: string;
+}
+
+export interface FunctionSignature {
+  name: string;
+  parameters: string;
+  returnType: string;
+  filePath: string;
+  isExported: boolean;
 }
 
 export interface PromptTemplate {
