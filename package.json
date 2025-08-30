@@ -25,7 +25,10 @@
     "lint:check": "find src -name '*.ts' -exec eslint {} \\;",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix",
+    "security": "npm run audit && npm run build && npm run test"
   },
   "repository": {
     "type": "git",
@@ -47,7 +50,7 @@
     "adm-zip": "^0.5.16",
     "@anthropic-ai/sdk": "^0.27.3",
     "openai": "^4.67.3",
-    "ora": "^5.4.1",
+    "nanospinner": "^1.1.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -63,5 +66,13 @@
     "shx": "^0.3.4",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "engineStrict": true,
+  "overrides": {
+    "brace-expansion": "^2.0.1"
   }
 }

@@ -45,7 +45,7 @@ The core architecture supports both single files and entire projects with intell
 - **AITranspiler** (`src/ai/ai-transpiler.ts`) - Single file transpilation with caching and budget management
 - **ProjectTranspiler** (`src/ai/project-transpiler.ts`) - Multi-file project transpilation with dependency resolution
 - **ProjectAnalyzer** (`src/ai/project-analyzer.ts`) - Code analysis, chunking, and dependency mapping
-- **Providers** (`src/ai/providers/`) - Claude and OpenAI implementations with official SDKs
+- **Providers** (`src/ai/providers/`) - Claude, OpenAI, and OpenRouter implementations with official SDKs
 - **GameBoyPromptEngine** (`src/ai/prompt-engine.ts`) - Specialized prompts with GameBoy hardware constraints
 
 **Key Features:**
@@ -62,9 +62,10 @@ The core architecture supports both single files and entire projects with intell
 ### Key Environment Variables
 ```bash
 # AI Providers
-CLAUDE_API_KEY      # Claude API key
-OPENAI_API_KEY      # OpenAI API key  
-GBTS_AI_PROVIDER    # Primary provider (claude/openai)
+OPENROUTER_API_KEY  # OpenRouter API key (recommended - unified access)
+CLAUDE_API_KEY      # Claude API key (direct)
+OPENAI_API_KEY      # OpenAI API key (direct)
+GBTS_AI_PROVIDER    # Primary provider (openrouter/claude/openai)
 
 # Budget Management
 GBTS_DAILY_BUDGET   # Daily spending limit ($5.00)
@@ -129,3 +130,28 @@ Tests mock the AI transpiler to avoid real API calls during development. The `AI
 
 ### No Legacy Fallback
 This is a 100% AI-powered solution - there is no fallback to traditional ts2c transpilation. All TypeScript → C conversion happens through AI providers.
+
+## Recent Updates (v2.0)
+
+### Migration from ora to nanospinner
+- **Performance**: Reduced bundle size from ~200KB to ~2KB
+- **Modern**: Updated to nanospinner with smoother animations
+- **Compatibility**: Maintained all existing Logger functionality
+- **Gaming Vibe**: Perfect fit for retro GameBoy development theme
+
+### OpenRouter Provider Integration
+- **Unified Access**: Single API for Claude 3.5 Sonnet AND GPT-4
+- **Cost Optimization**: Competitive pricing with transparent billing
+- **Automatic Fallback**: Seamless switching between models
+- **Configuration**: Set `GBTS_AI_PROVIDER=openrouter` and `OPENROUTER_API_KEY`
+
+### Automatic SDCC Installation
+- **Zero Configuration**: SDCC compiler installed automatically via `install.js`
+- **Cross-Platform**: Homebrew integration for macOS, manual instructions for others
+- **Modern Architecture**: Updated GBDK scripts from `gbz80` to `sm83` (modern GameBoy architecture)
+- **Error Handling**: Graceful fallback with clear installation instructions
+
+### Enhanced Project Autonomy
+- **Global Installation**: Package can be installed globally (`npm install -g gbts`)
+- **Self-Contained**: All dependencies (GBDK, SDCC) bundled or auto-installed
+- **Portable**: Works from any directory after global installation

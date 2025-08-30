@@ -57,6 +57,19 @@ __tests__/tmp/
 *.sym
 *.lst
 *.map
+*.asm
+*.lk
+*.noi
+
+# Test files
+test-*.ts
+test-*.c
+test-*.gb
+test-*.*
+
+# NPM package files
+*.tgz
+*.tar.gz
 
 # GBDK
 bin/

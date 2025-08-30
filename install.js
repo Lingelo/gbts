@@ -1,6 +1,7 @@
 const fs = require("fs");
 const https = require("https");
 const AdmZip = require("adm-zip");
+const { execSync } = require("child_process");
 
 const dir = process.cwd() + "/bin";
 
@@ -13,9 +14,11 @@ const logger = {
 
 async function main() {
     try {
+        await checkAndInstallSDCC();
         await download();
         await extract();
         await deleteZIP();
+        await fixGBDKScripts();
     } catch (error) {
         logger.fail(error);
     }
@@ -114,5 +117,65 @@ async function deleteZIP() {
     });
 }
 
+
+async function checkAndInstallSDCC() {
+    logger.start("Checking SDCC compiler installation");
+    
+    try {
+        // Check if SDCC is already installed
+        execSync('which sdcc', { stdio: 'ignore' });
+        logger.succeed("SDCC already installed");
+        return;
+    } catch (error) {
+        // SDCC not found, try to install it
+        logger.start("SDCC not found - installing via Homebrew");
+        
+        try {
+            // Check if Homebrew is installed
+            execSync('which brew', { stdio: 'ignore' });
+            
+            // Install SDCC with Homebrew
+            logger.start("Installing SDCC (Small Device C Compiler) - this may take a few minutes");
+            execSync('brew install sdcc', { stdio: 'inherit' });
+            logger.succeed("SDCC installed successfully");
+        } catch (brewError) {
+            // Homebrew not available
+            logger.fail("Homebrew not found. Please install SDCC manually:");
+            logger.fail("1. Install Homebrew: https://brew.sh");
+            logger.fail("2. Run: brew install sdcc");
+            logger.fail("Or install SDCC from: http://sdcc.sourceforge.net");
+            throw new Error("SDCC installation required for GameBoy development");
+        }
+    }
+}
+
+async function fixGBDKScripts() {
+    logger.start("Updating GBDK scripts for modern SDCC compatibility");
+    
+    const gbdkPath = `${process.cwd()}/bin/gbdk-n-master`;
+    
+    try {
+        // Fix compile script
+        const compileScript = `${gbdkPath}/bin/gbdk-n-compile.sh`;
+        if (fs.existsSync(compileScript)) {
+            let content = fs.readFileSync(compileScript, 'utf8');
+            content = content.replace('-mgbz80', '-msm83');
+            fs.writeFileSync(compileScript, content);
+        }
+        
+        // Fix link script
+        const linkScript = `${gbdkPath}/bin/gbdk-n-link.sh`;
+        if (fs.existsSync(linkScript)) {
+            let content = fs.readFileSync(linkScript, 'utf8');
+            content = content.replace('-mgbz80', '-msm83');
+            fs.writeFileSync(linkScript, content);
+        }
+        
+        logger.succeed("GBDK scripts updated for modern SDCC");
+    } catch (error) {
+        logger.fail(`Error updating GBDK scripts: ${error.message}`);
+        throw error;
+    }
+}
 
 main();

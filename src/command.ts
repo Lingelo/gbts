@@ -8,7 +8,7 @@ import { ProjectTranspiler } from './ai/project-transpiler'
 import { AIConfig } from './config/ai-config'
 import type { GameBoyContext } from './types'
 
-const processRoot = process.cwd()
+const processRoot = path.resolve(__dirname, '..')
 
 export class Command {
   private static aiTranspiler: AITranspiler | null = null
@@ -103,7 +103,6 @@ export class Command {
       if (result.metadata.optimizations.length > 0) {
         Logger.info(`🔧 Optimizations: ${result.metadata.optimizations.join(', ')}`)
       }
-
     } catch (error) {
       if (error instanceof Error && error.message.includes('budget')) {
         Logger.error(`💰 ${error.message}`)
@@ -133,14 +132,14 @@ export class Command {
       if (jsCode.length > aiConfig.get().project.maxFileSize) {
         Logger.info(`📦 Large file detected (${jsCode.length} chars) - using intelligent chunking`)
         Logger.stopLoading()
-        
+
         const projectTranspiler = new ProjectTranspiler(aiConfig.get())
         const result = await projectTranspiler.transpileProject(filePath, context, {
           useCache: true,
           maxRetries: 3,
         })
 
-        // Write output files  
+        // Write output files
         await projectTranspiler.writeProjectFiles(result, dirname)
         return
       }
@@ -175,7 +174,6 @@ export class Command {
       if (result.metadata.optimizations.length > 0) {
         Logger.info(`🔧 Optimizations: ${result.metadata.optimizations.join(', ')}`)
       }
-
     } catch (error) {
       Logger.stopLoading()
       if (error instanceof Error && error.message.includes('budget')) {

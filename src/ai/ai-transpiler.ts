@@ -8,6 +8,7 @@ import type {
 } from './types'
 import { ClaudeProvider } from './providers/claude-provider'
 import { OpenAIProvider } from './providers/openai-provider'
+import { OpenRouterProvider } from './providers/openrouter-provider'
 import { GameBoyPromptEngine } from './prompt-engine'
 import { Logger } from '../logger'
 import crypto from 'crypto'
@@ -33,6 +34,7 @@ export class AITranspiler {
     // Get API keys from config (with env fallback)
     const claudeKey = this.config.providers.apiKeys?.claude || process.env.CLAUDE_API_KEY
     const openaiKey = this.config.providers.apiKeys?.openai || process.env.OPENAI_API_KEY
+    const openrouterKey = this.config.providers.apiKeys?.openrouter || process.env.OPENROUTER_API_KEY
 
     // Initialize Claude if API key is available
     if (claudeKey) {
@@ -56,18 +58,30 @@ export class AITranspiler {
       }
     }
 
+    // Initialize OpenRouter if API key is available
+    if (openrouterKey) {
+      try {
+        const openrouter = new OpenRouterProvider(openrouterKey)
+        this.providers.set('openrouter', openrouter)
+        Logger.info('🌐 OpenRouter provider initialized - Multi-model access ready!')
+      } catch (error) {
+        errors.push(`OpenRouter: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    }
+
     // Check if we have at least one provider
     if (this.providers.size === 0) {
       Logger.error('🚨 No AI providers available!')
-      Logger.info('💡 Set CLAUDE_API_KEY and/or OPENAI_API_KEY environment variables')
+      Logger.info('💡 Set CLAUDE_API_KEY, OPENAI_API_KEY and/or OPENROUTER_API_KEY environment variables')
       Logger.info('🌐 Claude: https://console.anthropic.com/')
       Logger.info('🌐 OpenAI: https://platform.openai.com/api-keys')
+      Logger.info('🌐 OpenRouter: https://openrouter.ai/keys')
 
       if (errors.length > 0) {
         Logger.error(`Provider errors: ${errors.join(', ')}`)
       }
 
-      throw new Error('AI Transpiler requires at least one AI provider. Set CLAUDE_API_KEY or OPENAI_API_KEY.')
+      throw new Error('AI Transpiler requires at least one AI provider. Set CLAUDE_API_KEY, OPENAI_API_KEY or OPENROUTER_API_KEY.')
     }
 
     Logger.success(`🚀 ${this.providers.size} AI provider(s) ready: ${Array.from(this.providers.keys()).join(', ')}`)

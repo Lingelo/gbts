@@ -80,6 +80,7 @@ export interface AITranspilerConfig {
     apiKeys?: {
       claude?: string;
       openai?: string;
+      openrouter?: string;
     };
     local?: LocalLLMConfig;
   };

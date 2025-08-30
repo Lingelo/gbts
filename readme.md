@@ -22,50 +22,71 @@ GBTS 2.0 est une réécriture complète avec :
 ### Clés API IA (Obligatoires)
 Vous avez besoin d'au moins un fournisseur IA :
 
-**Claude AI (Recommandé) :**
+**OpenRouter (Recommandé - Accès unifié) :**
 ```bash
-export CLAUDE_API_KEY="votre-cle-claude"
+export OPENROUTER_API_KEY="sk-or-v1-VOTRE-CLE-API-ICI"
+```
+Obtenez votre clé sur : [openrouter.ai/keys](https://openrouter.ai/keys)
+- ✨ Accès à Claude 3.5 Sonnet ET GPT-4 via une seule API
+- 💰 Tarifs compétitifs et transparents
+- 🔄 Basculement automatique entre modèles
+
+**Claude AI (Direct) :**
+```bash
+export CLAUDE_API_KEY="sk-ant-VOTRE-CLE-API-ICI"
 ```
 Obtenez votre clé sur : [console.anthropic.com](https://console.anthropic.com/)
 
-**OpenAI (Alternative) :**
+**OpenAI (Direct) :**
 ```bash
-export OPENAI_API_KEY="votre-cle-openai"  
+export OPENAI_API_KEY="sk-VOTRE-CLE-API-ICI"  
 ```
 Obtenez votre clé sur : [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
-### Compilateur SDCC
-Requis pour compiler le code C généré par l'IA vers les ROMs GameBoy.
+### Compilateur SDCC (Installation Automatique)
+Le compilateur SDCC est maintenant installé automatiquement lors de `npm install` !
 
-**Windows :**
-Téléchargez SDCC depuis [sourceforge.net/projects/sdcc/files/sdcc-win64](https://sourceforge.net/projects/sdcc/files/sdcc-win64/)
-- ✅ Cochez "SDCC GBZ80 library"
-- ✅ Cochez "Add to PATH"
+**Installation manuelle si nécessaire :**
+
+**macOS :**
+```bash
+brew install sdcc  # Auto-installé par GBTS
+```
 
 **Linux (Debian/Ubuntu) :**
 ```bash
 sudo apt install build-essential sdcc sdcc-libraries
 ```
 
-**macOS :**
-```bash
-brew install sdcc
-```
+**Windows :**
+Téléchargez SDCC depuis [sourceforge.net/projects/sdcc/files/sdcc-win64](https://sourceforge.net/projects/sdcc/files/sdcc-win64/)
+- ✅ Cochez "SDCC SM83 library" (nouvelle architecture GameBoy)
+- ✅ Cochez "Add to PATH"
 
 ### Node.js
 Node.js 18+ requis.
 
 ## 🛠️ Installation & Configuration
 
+### Installation Globale (Recommandée)
 ```bash
-# Installer les dépendances
+# Installation globale depuis npm
+npm install -g gbts
+
+# Ou installation locale pour développement
+git clone https://github.com/Freuhlon/gbts
+cd gbts
 npm install
-
-# Construire le projet  
 npm run build
+```
 
-# Installer globalement (optionnel)
-npm install -g .
+### Configuration Ultra-Rapide
+```bash
+# 1. Définir votre clé API (OpenRouter recommandé)
+export OPENROUTER_API_KEY="sk-or-v1-VOTRE-CLE-API-ICI"
+
+# 2. GBTS est prêt ! SDCC s'installe automatiquement
+gbts --path mon-jeu.ts
 ```
 
 ## 🎮 Utilisation
@@ -99,57 +120,213 @@ gbts build --path input.ts              # Construire ROM depuis fichier .ihx
 | `--help, -h` | Afficher l'aide | `gbts --help` |
 | `--version` | Afficher la version | `gbts --version` |
 
-## 🎯 Démarrage Rapide - Hello World
+## 🎯 Démonstration Complète - Hello World sur GameBoy
 
-### Étape 1 : Créer le fichier TypeScript
-Créez `hello.ts` :
+### 🚀 Objectif : Afficher "HELLO WORLD" au centre de l'écran GameBoy
+
+### Étape 1 : Créer le projet GameBoy
+```bash
+mkdir mon-premier-jeu-gameboy
+cd mon-premier-jeu-gameboy
+```
+
+### Étape 2 : Écrire le code TypeScript
+Créez `hello-world.ts` :
 ```typescript
-console.log("Hello GameBoy World!");
+// Hello World centré sur GameBoy - Écrit en TypeScript !
+function main() {
+    // Message à afficher
+    const message = "HELLO WORLD";
+    
+    // Position pour centrer le texte sur l'écran GameBoy (160x144)
+    // Chaque caractère fait 8x8 pixels
+    const screenWidth = 20;  // 160 pixels / 8 = 20 caractères
+    const messageLength = message.length;
+    const startX = Math.floor((screenWidth - messageLength) / 2);
+    const centerY = 8;  // Milieu vertical de l'écran
+    
+    console.log("Initialisation GameBoy...");
+    
+    // Afficher le message centré
+    console.log(`Position: (${startX}, ${centerY})`);
+    console.log(message);
+    
+    // Boucle de jeu simple
+    let frameCounter = 0;
+    while (true) {
+        frameCounter++;
+        
+        // Animation simple : clignotement toutes les 60 frames
+        if (frameCounter % 120 === 0) {
+            console.log("*** " + message + " ***");
+        }
+        
+        // Attendre la prochaine frame
+        // Cette partie sera optimisée par l'IA pour GameBoy
+        for (let i = 0; i < 1000; i++) {
+            // Delay simple
+        }
+        
+        // Arrêter après 300 frames pour la démo
+        if (frameCounter > 300) {
+            break;
+        }
+    }
+    
+    console.log("Demo terminée !");
+}
 
-// Exemple plus complexe
-const joueur = {
-  x: 80,
-  y: 72,
-  sprite: 0
-};
+// Lancer le programme principal
+main();
+```
 
-function mettreAJourJoueur() {
-  if (joueur.x < 160) {
-    joueur.x += 1;
-  }
+### Étape 3 : Configuration de l'API
+```bash
+# Définir votre clé API OpenRouter
+export OPENROUTER_API_KEY="sk-or-v1-VOTRE-CLE-API-ICI"
+
+# Ou Claude/OpenAI si vous préférez
+# export CLAUDE_API_KEY="sk-ant-VOTRE-CLE-API-ICI"
+# export OPENAI_API_KEY="sk-VOTRE-CLE-API-ICI"
+```
+
+### Étape 4 : Générer la ROM GameBoy
+```bash
+# Installation globale GBTS (si pas déjà fait)
+npm install -g gbts
+
+# Transpilation IA + Compilation ROM complète
+gbts all --path hello-world.ts
+
+# 🎯 GBTS va :
+# 1. Envoyer votre TypeScript à l'IA (Claude/GPT)
+# 2. Recevoir du code C GameBoy optimisé
+# 3. Compiler avec SDCC vers assembly GameBoy
+# 4. Générer hello-world.gb (ROM finale)
+```
+
+### Étape 5 : Examiner le code C généré
+```bash
+# Voir la traduction IA de votre TypeScript
+cat hello-world.c
+```
+
+**Exemple de sortie IA :**
+```c
+#include <gb/gb.h>
+#include <stdio.h>
+
+void main() {
+    // Initialize GameBoy display
+    DISPLAY_ON;
+    SHOW_BKG;
+    
+    // Center position calculation for GameBoy screen
+    UINT8 startX = 4;  // Centered position for "HELLO WORLD"
+    UINT8 centerY = 8;
+    
+    // Clear background and set up text display
+    printf("\x1b[%d;%dH", centerY, startX);
+    printf("HELLO WORLD");
+    
+    // Main game loop with VBlank synchronization  
+    UINT16 frameCounter = 0;
+    
+    while(1) {
+        frameCounter++;
+        
+        // Blinking animation every 2 seconds (120 frames)
+        if(frameCounter % 120 == 0) {
+            printf("\x1b[%d;%dH", centerY + 1, startX - 1);
+            printf("*** HELLO WORLD ***");
+        }
+        
+        // Wait for VBlank - proper GameBoy timing
+        wait_vbl_done();
+        
+        // Demo end condition
+        if(frameCounter > 300) {
+            break;
+        }
+    }
+    
+    printf("\x1b[10;6H");
+    printf("Demo finished!");
+    
+    // Infinite loop to keep program running
+    while(1) {
+        wait_vbl_done();
+    }
 }
 ```
 
-### Étape 2 : Générer la ROM GameBoy
+### Étape 6 : Tester dans un émulateur
 ```bash
-# Définir votre clé API
-export CLAUDE_API_KEY="votre-cle-api-ici"
+# Vérifier que la ROM est générée
+ls -la hello-world.gb
 
-# Convertir vers ROM GameBoy
-gbts --path hello.ts
+# Lancer dans votre émulateur GameBoy favori
 ```
 
-### Étape 3 : Lancer dans l'Émulateur
-Le fichier `hello.gb` généré peut être lancé dans n'importe quel émulateur GameBoy :
-- [BGB](https://bgb.bircd.org/) (Windows)
-- [SameBoy](https://sameboy.github.io/) (Multi-plateforme)
-- [mGBA](https://mgba.io/) (Multi-plateforme)
+**Émulateurs recommandés :**
+- **[BGB](https://bgb.bircd.org/)** (Windows) - Excellent debugger
+- **[SameBoy](https://sameboy.github.io/)** (Mac/Linux/Windows) - Très précis
+- **[mGBA](https://mgba.io/)** (Multi-plateforme) - Interface moderne
+- **[Gambatte](https://github.com/sinamas/gambatte)** - Haute précision
+
+### 🎮 Résultat Final
+
+Votre GameBoy affichera :
+```
+     HELLO WORLD
+   *** HELLO WORLD ***
+     (clignotant)
+
+   Demo finished!
+```
+
+### 📊 Métriques de la démonstration
+- **Code TypeScript :** ~50 lignes lisibles
+- **Code C généré :** ~40 lignes optimisées GameBoy 
+- **ROM finale :** ~32KB (standard GameBoy)
+- **Coût IA :** ~$0.01 (très économique)
+- **Temps total :** 2-3 minutes de la création à l'exécution !
+
+### 🔧 Personnalisations possibles
+```typescript
+// Modifier la couleur du texte
+const textColor = 1;  // 0=blanc, 1=gris clair, 2=gris foncé, 3=noir
+
+// Ajouter des sprites de caractères
+const playerSprite = [
+  0x3C, 0x7E, 0xFF, 0xDB, 0xFF, 0x24, 0x5A, 0x3C
+];
+
+// Animation plus complexe
+function animateText() {
+  // Votre logique d'animation
+  // L'IA comprendra et optimisera automatiquement !
+}
+```
+
+**🚀 En 5 minutes, vous avez créé votre première ROM GameBoy avec TypeScript et IA !**
 
 ## ⚙️ Configuration
 
 ### Variables d'Environnement
 ```bash
 # Fournisseurs IA
-CLAUDE_API_KEY="sk-ant-..."        # Clé API Claude
-OPENAI_API_KEY="sk-..."           # Clé API OpenAI
-GBTS_AI_PROVIDER="claude"         # Fournisseur principal (claude/openai)
+OPENROUTER_API_KEY="sk-or-v1-..."  # OpenRouter (recommandé)
+CLAUDE_API_KEY="sk-ant-..."        # Claude direct
+OPENAI_API_KEY="sk-..."            # OpenAI direct
+GBTS_AI_PROVIDER="openrouter"      # Fournisseur principal
 
 # Gestion Budget  
 GBTS_DAILY_BUDGET="5.00"          # Limite dépenses quotidiennes (5,00€)
 GBTS_MAX_COST="0.10"              # Coût max par transpilation (0,10€)
 
 # Performance & Chunking
-GBTS_DISABLE_CACHE="false"        # Activer/désactiver cache
+GBTS_DISABLE_CACHE="false"        # Activer/désactiver cache intelligent
 GBTS_CHUNK_SIZE="4000"            # Taille max par chunk (4000 chars)
 GBTS_MAX_FILE_SIZE="8000"         # Taille fichier avant chunking
 ```
@@ -159,8 +336,8 @@ Créez `gbts.config.json` :
 ```json
 {
   "providers": {
-    "primary": "claude",
-    "fallback": ["openai"]
+    "primary": "openrouter",
+    "fallback": ["claude", "openai"]
   },
   "budget": {
     "dailyBudget": 5.00,

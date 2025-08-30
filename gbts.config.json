@@ -1,7 +1,8 @@
 {
   "providers": {
-    "primary": "claude",
+    "primary": "openrouter",
     "fallback": [
+      "claude",
       "openai",
       "local"
     ],
@@ -26,5 +27,10 @@
     "minScore": 0.7,
     "requireValidation": true,
     "enableLearning": true
+  },
+  "project": {
+    "chunkSize": 4000,
+    "maxFileSize": 8000,
+    "enableModularBuild": true
   }
 }
